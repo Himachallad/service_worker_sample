@@ -1,0 +1,16 @@
+{
+  "name": "serviceworkers",
+  "version": "1.0.0",
+  "description": "Service worker usage example",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "test"
+  },
+  "author": "Nikhil Pathania",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4"
+  }
+}
