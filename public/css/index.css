@@ -1,36 +1,58 @@
 body {
     font-family: 'Open Sans';
+    overflow-x: hidden;
 }
 
-h1, .enablePush {
+h1 {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Ripple effect */
-.ripple {
-    background-position: center;
-    transition: all 0.8s;
-  }
-  .ripple:hover {
-    background: #1a8cff radial-gradient(circle, transparent 1%, #1a8cff 1%) center/15000%;
-  }
-  .ripple:active {
-    background-color: #47a7f5;
-    background-size: 100%;
-    transition: 0s;
-  }
+.networkUnavailable {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: red;
+  color: white;
+  height: 30px;
+}
 
-button {
-    width: auto;
-    padding: 10px;
-    border: 2px solid #1a8cff;
-    border-radius: 5px;
-    background: #1a8cff;
-    color: white;
-    font-family: 'Open Sans';
-    font-weight: bolder;
-    cursor: pointer;
-    outline: none;
+.bookSummary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+li {
+  list-style-type: none;
+}
+
+.bookContainer {
+  display: flex;
+  position: relative;
+  left: 15%;
+  padding: 30px;
+}
+
+.bookImage {
+  width: 16%;
+  padding-right: 40px;
+}
+
+.author {
+  color: grey;
+  font-size: 16px;
+}
+
+.publishYear {
+  color: grey;
+  font-size: 12px;
+}
+.bookSummary {
+  padding-top: 20px;
+}
+
+.bookInfo {
+  width: 600px;
 }

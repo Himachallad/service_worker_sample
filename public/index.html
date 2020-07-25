@@ -2,13 +2,99 @@
     <head>
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans" rel="stylesheet" />
-    </head>
+        <link rel="icon" 
+        type="image/png" 
+        href="img/favicon.ico">
+        <script src="registerSw.js"></script>
+        <script>
+            function isOnline(){
+                return window.navigator.onLine;
+            }
+            if(!isOnline()) {
+                var tid = setInterval( function () {
+                    if ( document.readyState !== 'complete' ) return;
+                    clearInterval( tid );       
+                    document.getElementById("networkId").classList.add("networkUnavailable");
+                    document.getElementsByClassName("networkUnavailable")[0].innerHTML = "Running the page in offline mode!";
+                }, 100 );  
+            } else {
+                if(document.getElementById("networkId")) {
+                    document.getElementById("networkId").innerHTML = "";
+                    document.getElementById("networkId").classList.remove("networkUnavailable");
+                }
+            }
+        </script>
+        <title>Service worker sample</title>
+    </head> 
     <body>
         <h1>
-            Register Service Worker
+            Scifi Books
         </h1>
-        <div class="enablePush">
-            <button class="ripple"> Enable push </button>
+        <div id="networkId">    
+        </div>
+        <div>
+            <ul>
+                <li class="bookContainer">
+                    <img class="bookImage" src="books-images/1984first.jpg" width="200" height="300"></img>
+                    <div class="bookInfo">
+                        <div class="author">Author: George Orwell</div>
+                        <div class="publishYear">Published: 8 June 1949</div>
+                        <div class="bookSummary">
+                            1984 is a dystopian novella by George Orwell published in 1949, which follows the life of Winston Smith, a low ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its ominous ruler Big Brother. 'Big Brother' controls every aspect of people's lives.
+                        </div>
+                    </div>
+                </li>
+                <li class="bookContainer">
+                    <img class="bookImage" src="books-images/Dune-Frank_Herbert_(1965)_First_edition.jpg" width="200" height="300"></img>
+                    <div class="bookInfo">
+                        <div class="author">Author: Frank Herbert</div>
+                        <div class="publishYear">Published: August 1, 1965</div>
+                        <div class="bookSummary">
+                            1984 is a dystopian novella by George Orwell published in 1949, which follows the life of Winston Smith, a low ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its ominous ruler Big Brother. 'Big Brother' controls every aspect of people's lives.
+                        </div>
+                    </div>
+                </li>
+                <li class="bookContainer">
+                    <img class="bookImage" src="books-images/Hyperion_cover.jpg" width="200" height="300"></img>
+                    <div class="bookInfo">
+                        <div class="author">Author: Dan Simmons</div>
+                        <div class="publishYear">‎Published: 1989</div>
+                        <div class="bookSummary">
+                            1984 is a dystopian novella by George Orwell published in 1949, which follows the life of Winston Smith, a low ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its ominous ruler Big Brother. 'Big Brother' controls every aspect of people's lives.
+                        </div>
+                    </div>
+                </li>
+                <li class="bookContainer">
+                    <img class="bookImage" src="books-images/Neuromancer_(Book).jpg" width="200" height="300"></img>
+                    <div class="bookInfo">
+                        <div class="author">Author: William Gibson</div>
+                        <div class="publishYear">Published: 1 July 1984</div>
+                        <div class="bookSummary">
+                            1984 is a dystopian novella by George Orwell published in 1949, which follows the life of Winston Smith, a low ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its ominous ruler Big Brother. 'Big Brother' controls every aspect of people's lives.
+                        </div>
+                    </div>
+                </li>
+                <li class="bookContainer">
+                    <img class="bookImage" src="books-images/Snowcrash.jpg" width="200" height="300"></img>
+                    <div class="bookInfo">
+                        <div class="author">Author: Neal Stephenson</div>
+                        <div class="publishYear">Published: June 1992</div>
+                        <div class="bookSummary">
+                            1984 is a dystopian novella by George Orwell published in 1949, which follows the life of Winston Smith, a low ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its ominous ruler Big Brother. 'Big Brother' controls every aspect of people's lives.
+                        </div>
+                    </div>
+                </li>
+                <li class="bookContainer">
+                    <img class="bookImage" src="books-images/TheLeftHandOfDarkness1stEd.jpg" width="200" height="300"></img>
+                    <div class="bookInfo">
+                        <div class="author">Author: Ursula K. Le Guin</div>
+                        <div class="publishYear">Published: 1969</div>
+                        <div class="bookSummary">
+                            1984 is a dystopian novella by George Orwell published in 1949, which follows the life of Winston Smith, a low ranking member of 'the Party', who is frustrated by the omnipresent eyes of the party, and its ominous ruler Big Brother. 'Big Brother' controls every aspect of people's lives.
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </body>
 </html>
