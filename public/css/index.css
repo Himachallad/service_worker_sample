@@ -18,9 +18,10 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: red;
+  background: orange;
   color: white;
-  height: 30px;
+  height: 40px;
+  font-size: 18px;
 }
 
 .bookSummary {

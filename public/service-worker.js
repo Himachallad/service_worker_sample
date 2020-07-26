@@ -1,5 +1,5 @@
 /**
- * We are following cache only strategy
+ * We are following Cache falling back to the network
  */
 const UNVARYING_CACHE = "images-v1";
 /**
@@ -19,7 +19,7 @@ const CACHED_ONLY_URLS = [
 ];
 
 /**
- * We are precaching the image urls as they don't update frequently
+ * We are precaching the image urls, fonts as they don't update frequently
  */
 self.addEventListener("install", (installEvent) => {
   //   self.skipWaiting();
