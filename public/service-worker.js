@@ -1,39 +1,46 @@
-/*
- Copyright 2016 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/**
+ * We are following cache only strategy
  */
+const UNVARYING_CACHE = "images-v1";
+/**
+ * We are following Cache then network strategy.
+ */
+const VOLATILE = "volatile-v1";
 
-// Names of the two caches used in this version of the service worker.
-// Change to v2, etc. when you update any of the local resources, which will
-// in turn trigger the install event again.
-const PRECACHE = "precache-" + Date.now();
-const IMAGES = "image-" + Date.now();
+// Images we always want to be cached
+const CACHED_ONLY_URLS = [
+  "css/fonts/OpenSans-Regular.ttf",
+  "books-images/1984first.jpg",
+  "books-images/Dune-Frank_Herbert_(1965)_First_edition.jpg",
+  "books-images/Hyperion_cover.jpg",
+  "books-images/Neuromancer_(Book).jpg",
+  "books-images/Snowcrash.jpg",
+  "books-images/TheLeftHandOfDarkness1stEd.jpg",
+];
 
-// A list of local resources we always want to be cached.
-const PRECACHE_URLS = ["index.html"];
-
-// The install handler takes care of precaching the resources we always need.
+/**
+ * We are precaching the image urls as they don't update frequently
+ */
 self.addEventListener("install", (installEvent) => {
   //   self.skipWaiting();
   installEvent.waitUntil(
     caches
-      .open(PRECACHE)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
-      .then(self.skipWaiting())
+      .open(UNVARYING_CACHE)
+      .then((cache) => cache.addAll(CACHED_ONLY_URLS))
+      .then(() => {
+        console.log(
+          "Activate service worker! This will listen to future fetch calls"
+        );
+        self.skipWaiting();
+      })
   );
 });
 
-// The activate handler takes care of cleaning up old caches.
+/**
+ * Activates the new service worker and clean old cache incase of version changes
+ */
 self.addEventListener("activate", (event) => {
-  const currentCaches = [PRECACHE, IMAGES];
+  const currentCaches = [UNVARYING_CACHE, VOLATILE];
   event.waitUntil(
     caches
       .keys()
@@ -53,37 +60,69 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// The fetch handler serves responses for same-origin resources from a cache.
-// If no response is found, it populates the runtime cache with the response
-// from the network before returning it to the page.
+async function updateCacheFromResponse(cache, request, fetchResponse) {
+  if (fetchResponse.status >= 200 && fetchResponse.status < 300) {
+    await cache.put(request, fetchResponse);
+  }
+  console.log("Cache updated");
+}
+/**
+ * Lazily updates cache in background from network
+ * @param {*} request
+ */
+async function updateCacheFromNetwork(request) {
+  try {
+    const cache = await caches.open(VOLATILE);
+    const fetchResponse = await fetch(request);
+    updateCacheFromResponse(cache, request, fetchResponse.clone());
+  } catch (err) {
+    console.log("Network call failed with error: ", err);
+  }
+}
+
+/**
+ * Network call made when we couldn't find request in the cache
+ * @param {*} request
+ */
+async function getResponseFromNetwork(request) {
+  const fetchResponse = await fetch(request);
+  const cache = await caches.open(VOLATILE);
+  updateCacheFromResponse(cache, request, fetchResponse.clone());
+  return fetchResponse;
+}
+
+/**
+ * The fetch handler serves responses for same-origin resources from a cache.
+ *
+ * If response is cached then return cached response and lazily update
+ * the cache in background
+ * else get response from network and cache the response for future
+ *
+ */
 self.addEventListener("fetch", (event) => {
   // Skip cross-origin requests, like those for Google Analytics.
   if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
+      caches.match(event.request).then(async (cachedResponse) => {
+        /**
+         * We want font and images to work in cache only mode.
+         */
         let destination = event.request && event.request.destination;
         switch (destination) {
           case "image":
+          case "font":
             if (cachedResponse) {
               return cachedResponse;
             }
         }
 
-        return caches.open(IMAGES).then((cache) => {
-          return fetch(event.request)
-            .then((response) => {
-              // Put a copy of the response in the runtime cache.
-              return cache.put(event.request, response.clone()).then(() => {
-                return response;
-              });
-            })
-            .catch((error) => {
-              console.log(error);
-              return caches.match(event.request).then((cachedResponse) => {
-                if (cachedResponse) return cachedResponse;
-              });
-            });
-        });
+        if (cachedResponse) {
+          updateCacheFromNetwork(event.request);
+          return cachedResponse;
+        } else {
+          const fetchedResponse = await getResponseFromNetwork(event.request);
+          return fetchedResponse;
+        }
       })
     );
   }
